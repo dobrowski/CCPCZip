@@ -102,38 +102,44 @@ sum.map <- monterey_districts %>%
         tm_polygons("priority.infant",
                     popup.vars = c("Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
-                                   "School-Age Priority Level" ="priority.school")
+                                   "School-Age Priority Level" ="priority.school"),
+                    title = "Infant Priority Level"
                     ) +
         tm_borders() +
         tm_text("Zip", auto.placement = TRUE) +
-        tm_view(set.view = c(lat = 36.65 , lon = -121.6 ,  zoom = 10)) +
+        tm_view(set.view = c(lat = 36.2 , lon = -121.1 ,  zoom = 9)) +
         tm_facets(sync = TRUE, ncol = 2)    
     
     map.preschool <- tm_shape(sum.map) +
         tm_polygons("priority.preschool",
                     popup.vars = c("Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
-                                   "School-Age Priority Level" ="priority.school")
+                                   "School-Age Priority Level" ="priority.school"),
+                    title = "Preschool Priority Level"
         ) +
         tm_borders() +
         tm_text("Zip", auto.placement = TRUE) +
-        tm_view(set.view = c(lat = 36.65 , lon = -121.6 ,  zoom = 10)) +
+        tm_view(set.view = c(lat = 36.2 , lon = -121.1 ,  zoom = 9)) +
         tm_facets(sync = TRUE, ncol = 2)  
     
     map.school <- tm_shape(sum.map) +
         tm_polygons("priority.school",
                     popup.vars = c("Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
-                                   "School-Age Priority Level" ="priority.school")
+                                   "School-Age Priority Level" ="priority.school"),
+                    title = "School-Age Priority Level"
         ) +
         tm_borders() +
         tm_text("Zip", auto.placement = TRUE) +
-        tm_view(set.view = c(lat = 36.65 , lon = -121.6 ,  zoom = 10)) +
+        tm_view(set.view = c(lat = 36.2 , lon = -121.1 ,  zoom = 9)) +
         tm_facets(sync = TRUE, ncol = 2)  
     
     
     
     
+    tmap_save(map.infant,  "map-infant.html")
+    tmap_save(map.preschool,  "map-preschool.html")
+    tmap_save(map.school,  "map-school.html")
     
     
     tmap_save(map.facet,  "map-all-priorities.html")
