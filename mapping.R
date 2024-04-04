@@ -11,10 +11,6 @@ options(tigris_use_cache = TRUE)
 
 
 
-library(crsuggest)
-
-fl_crs <- suggest_crs(fl_counties)
-
 
 
 ca.zips <- zctas(starts_with = el.school$Zip, cb = TRUE, year = 2020)
@@ -100,7 +96,8 @@ sum.map <- monterey_districts %>%
     
     map.infant <- tm_shape(sum.map) +
         tm_polygons("priority.infant",
-                    popup.vars = c("Infant Priority Level" = "priority.infant",
+                    popup.vars = c("City",
+                                   "Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
                                    "School-Age Priority Level" ="priority.school"),
                     title = "Infant Priority Level"
@@ -112,7 +109,8 @@ sum.map <- monterey_districts %>%
     
     map.preschool <- tm_shape(sum.map) +
         tm_polygons("priority.preschool",
-                    popup.vars = c("Infant Priority Level" = "priority.infant",
+                    popup.vars = c("City",
+                                   "Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
                                    "School-Age Priority Level" ="priority.school"),
                     title = "Preschool Priority Level"
@@ -124,7 +122,8 @@ sum.map <- monterey_districts %>%
     
     map.school <- tm_shape(sum.map) +
         tm_polygons("priority.school",
-                    popup.vars = c("Infant Priority Level" = "priority.infant",
+                    popup.vars = c("City",
+                                   "Infant Priority Level" = "priority.infant",
                                    "Preschool Priority Level" ="priority.preschool",
                                    "School-Age Priority Level" ="priority.school"),
                     title = "School-Age Priority Level"
@@ -142,5 +141,5 @@ sum.map <- monterey_districts %>%
     tmap_save(map.school,  "map-school.html")
     
     
-    tmap_save(map.facet,  "map-all-priorities.html")
+ #   tmap_save(map.facet,  "map-all-priorities.html")
     

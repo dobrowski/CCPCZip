@@ -14,6 +14,7 @@ library(tidyverse)
 library(here)
 library(vroom)
 library(readxl)
+library(googlesheets4)
 
 
 # Send from Laurie who got it from Department of Social Services Website (I have attached the excel spreadsheet for all California Large Licensed Homes):
@@ -22,6 +23,26 @@ library(readxl)
 large.homes <- vroom(here("data","ChildCareCenters01282024.csv"), .name_repair = ~ janitor::make_clean_names(., case = "snake")) %>%
     filter(str_detect(county_name, "MONTEREY"),
            facility_status != "CLOSED")
+
+
+cities <- read_sheet("https://docs.google.com/spreadsheets/d/1nHpPJjXhL_opClaaQClvx-ZuiLTOuiC_O8rEetI1XRk/edit#gid=0") %>%
+    transmute(Zip = as.character(`ZIP CODE`),
+              City = CITY)
+
+childcarecenters <- read_xls(here("data","Monterey ChildCareCenters 4.4.24.xls"))
+
+childcarehomes <- read_xls(here("data","Monterey CHILDCAREHOME 4.4.24.xls"))
+
+childcare <- childcarecenters %>%
+    bind_rows(childcarehomes) %>%
+    filter(`Facility Status` == "LICENSED") %>%
+    group_by(`Facility Zip`) %>%
+    summarise(number = n(),
+              capacity = sum(`Facility Capacity`)) %>%
+    rename(Zip = `Facility Zip`) %>%
+    mutate(Zip = as.character(Zip))
+
+
 
 # Early Learning Needs Assessment Tool (ELNAT) website: 
 # https://www.elneedsassessment.org/
@@ -161,12 +182,31 @@ el.school <- read_xlsx(here("data", school.age), range = "A4:W40")  %>%
 
 
 
-summary <- el.infant %>%
-    select(Zip, priority.infant) %>%
+summary <- cities %>%
+    left_join(el.infant) %>%
+    select(Zip, City, priority.infant) %>%
     left_join(el.needs) %>% 
-    select(Zip, priority.infant, priority.preschool) %>%
+    select(Zip,  City, priority.infant, priority.preschool) %>%
     left_join(el.school) %>% 
-    select(Zip, priority.infant, priority.preschool, priority.school)
+    select(Zip,  City, priority.infant, priority.preschool, priority.school) %>%
+    filter(Zip != "Monterey") %>%
+    left_join(childcare)
 
 
 write.csv(summary, "Priority Summary.csv")
+
+summary2 <- summary
+
+
+write_rds(summary, "PrioritySummary.rds")
+
+
+gsheet <- "https://docs.google.com/spreadsheets/d/1FSxQIXwUs8wDFdIxc-Gdxso7xLz7IgSd7NOXyAFeVAM/edit#gid=0"
+
+write_sheet(el.needs, gsheet, sheet = "preschool")
+
+write_sheet(el.infant, gsheet, sheet =  "infant")
+
+write_sheet(el.school, gsheet, sheet =  "school")
+
+write_sheet(summary, gsheet, sheet =  "summary")
